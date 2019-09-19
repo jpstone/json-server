@@ -13,7 +13,6 @@ module.exports = (db, name, opts) => {
 
   // Embed function used in GET /name and GET /name/id
   function embed(resource, e) {
-    // externalResourceVal.filter(x => x[queryIdx]).filter(x => x[queryIdx] && x[queryIdx].includes(resource.id)).value()
     e &&
       [].concat(e).forEach(externalResource => {
         if (db.get(externalResource).value) {
