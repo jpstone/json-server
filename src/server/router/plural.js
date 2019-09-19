@@ -13,18 +13,20 @@ module.exports = (db, name, opts) => {
 
   // Embed function used in GET /name and GET /name/id
   function embed(resource, e) {
+    // externalResourceVal.filter(x => x[queryIdx]).filter(x => x[queryIdx] && x[queryIdx].includes(resource.id)).value()
     e &&
       [].concat(e).forEach(externalResource => {
         if (db.get(externalResource).value) {
-          const query = {}
+          const { id } = resource
           const singularResource = pluralize.singular(name)
-          let externalResourceVal = db.get(externalResource)
-          let [resourceValue] = externalResourceVal.value()
           let queryIdx = `${singularResource}${opts.foreignKeySuffix}`
-          query[queryIdx] = Array.isArray(resourceValue[queryIdx])
-            ? [resource.id]
-            : resource.id
-          resource[externalResource] = externalResourceVal.filter(query).value()
+          let externalResourceVal = db.get(externalResource)
+          resource[externalResource] = externalResourceVal
+            .filter(item => item[queryIdx])
+            .filter(item => {
+              return item[queryIdx] && item[queryIdx].toString().includes(id)
+            })
+            .value()
         }
       })
   }
